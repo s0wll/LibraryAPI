@@ -3,6 +3,6 @@ from src.models.users import UsersOrm
 from src.CRUD.mappers.mappers import UserDataMapper
 
 
-class AuthorsCRUD(BaseCRUD):
+class UsersCRUD(BaseCRUD):
     model = UsersOrm
     mapper = UserDataMapper

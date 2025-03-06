@@ -20,3 +20,12 @@ class BookAdd(BaseModel):
 
 class Book(BookAdd):
     id: int
+
+
+class BookAuthorAdd(BaseModel):
+    book_id: int
+    author_id: int
+
+
+class BookAuthor(BookAuthorAdd):
+    id: int
