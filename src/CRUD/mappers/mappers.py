@@ -4,7 +4,7 @@ from src.schemas.authors import Author
 from src.models.books import BooksAuthorsOrm, BooksOrm
 from src.schemas.books import Book, BookAuthor
 from src.models.users import UsersOrm
-from src.schemas.users import User
+from src.schemas.users import User, UserWithHashedPassword
 
 
 class AuthorDataMapper(DataMapper):
@@ -25,3 +25,8 @@ class BookAuthorDataMapper(DataMapper):
 class UserDataMapper(DataMapper):
     db_model = UsersOrm
     schema = User
+
+
+class UserWithHashedPasswordDataMapper(DataMapper):
+    db_model = UsersOrm
+    schema = UserWithHashedPassword

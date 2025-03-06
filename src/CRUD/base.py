@@ -31,6 +31,20 @@ class BaseCRUD:
     async def get_all(self) -> list[BaseModel | None]:
         return await self.get_filtered()
     
+    async def get_one_or_none(self, **filter_by) -> BaseModel | None | Any:
+        query = select(self.model).filter_by(**filter_by)
+        result = await self.session.execute(query)
+        model = result.scalars().one_or_none()
+        if model is None:
+            return None
+        return self.mapper.map_to_domain_entity(model)
+
+    async def get_one(self, **filter_by) -> BaseModel:
+        query = select(self.model).filter_by(**filter_by)
+        result = await self.session.execute(query)
+        model = result.scalars().one()
+        return self.mapper.map_to_domain_entity(model)
+    
     async def edit(self, data: BaseModel, exclude_unset: bool = False, **filter_by) -> None:
         update_stmt = (
             update(self.model)
