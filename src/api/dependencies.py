@@ -1,10 +1,21 @@
 from typing import Annotated
 
-from fastapi import Depends, Request
+from fastapi import Depends, Query, Request
+from pydantic import BaseModel
 
 from services.auth import AuthService
 from src.utils.db_manager import DBManager
 from src.database import async_session_maker
+
+
+class PaginationParams(BaseModel):
+    page: Annotated[int | None, Query(1, ge=1, description="Номер страницы")]
+    per_page: Annotated[
+        int | None, Query(None, ge=1, lt=30, description="Количество отелей на одной странице")
+    ]
+
+
+PaginationDep = Annotated[PaginationParams, Depends()]
 
 
 def get_token(request: Request) -> str:
