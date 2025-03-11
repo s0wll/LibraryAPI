@@ -2,7 +2,7 @@ from src.CRUD.mappers.base import DataMapper
 from src.models.authors import AuthorsOrm
 from src.schemas.authors import Author
 from src.models.books import BooksAuthorsOrm, BooksOrm
-from src.schemas.books import Book, BookAuthor
+from src.schemas.books import Book, BookAuthor, BookWithRels
 from src.models.users import UsersOrm
 from src.schemas.users import User, UserWithHashedPassword
 
@@ -15,6 +15,11 @@ class AuthorDataMapper(DataMapper):
 class BookDataMapper(DataMapper):
     db_model = BooksOrm
     schema = Book
+
+
+class BookDataWithRelsMapper(DataMapper):
+    db_model = BooksOrm
+    schema = BookWithRels
 
 
 class BookAuthorDataMapper(DataMapper):
