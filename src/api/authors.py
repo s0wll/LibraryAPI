@@ -3,7 +3,7 @@ from datetime import date
 from fastapi import APIRouter, Body, Query
 
 from src.services.authors import AuthorsService
-from src.api.dependencies import PaginationDep, DBDep
+from src.api.dependencies import AdminDep, PaginationDep, DBDep
 from src.schemas.authors import AuthorAdd, AuthorPatch
 
 
@@ -12,6 +12,7 @@ router = APIRouter(prefix="/authors", tags=["Авторы"])
 
 @router.get("")
 async def get_authors(
+    admin_check: AdminDep,
     db: DBDep,
     pagination: PaginationDep,
     name: str | None = Query(None),
@@ -25,29 +26,29 @@ async def get_authors(
 
 
 @router.get("/{author_id}")
-async def get_author(db: DBDep, author_id: int):
+async def get_author(admin_check: AdminDep, db: DBDep, author_id: int):
     return await AuthorsService(db).get_author(author_id)
 
 
 @router.post("")
-async def add_author(db: DBDep, author_data: AuthorAdd = Body(embed=True)):
+async def add_author(admin_check: AdminDep, db: DBDep, author_data: AuthorAdd = Body(embed=True)):
     author = await AuthorsService(db).add_author(author_data)
     return {"status": "OK", "data": author}
 
 
 @router.put("/{author_id}")
-async def edit_author(db: DBDep, author_id: int, author_data: AuthorAdd):
+async def edit_author(admin_check: AdminDep, db: DBDep, author_id: int, author_data: AuthorAdd):
     await AuthorsService(db).edit_author(author_id, author_data)
     return {"status": "OK"}
 
 
 @router.patch("/{author_id}")
-async def partially_edit_author(db: DBDep, author_id: int, author_data: AuthorPatch):
+async def partially_edit_author(admin_check: AdminDep, db: DBDep, author_id: int, author_data: AuthorPatch):
     await AuthorsService(db).partially_edit_author(author_id, author_data)
     return {"status": "OK"}
 
 
 @router.delete("/{author_id}")
-async def delete_author(db: DBDep, author_id: int):
+async def delete_author(admin_check: AdminDep, db: DBDep, author_id: int):
     await AuthorsService(db).delete_author(author_id)
     return {"status": "OK"}
