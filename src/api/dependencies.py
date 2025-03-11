@@ -28,7 +28,7 @@ def get_current_user_id(token: str = Depends(get_token)) -> int:
     return data["user_id"]
 
 
-UserIdDep = Annotated[int, Depends(get_current_user_id)]
+# UserIdDep = Annotated[int, Depends(get_current_user_id)]  # Пока не нужно
 
 
 async def get_db():

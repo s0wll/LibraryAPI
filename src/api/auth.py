@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response
 
-from src.api.dependencies import UserIdDep, DBDep
+from src.api.dependencies import UserDep, DBDep
 from src.services.auth import AuthService
 from src.schemas.users import UserAddRequest
 
@@ -26,8 +26,8 @@ async def login_user(
 
 
 @router.get("/me")
-async def get_me(user_id: UserIdDep, db: DBDep):
-    return await AuthService(db).get_one_or_none_user(user_id)
+async def get_me(user: UserDep, db: DBDep):
+    return await AuthService(db).get_one_or_none_user(user.id)
 
 
 @router.post("/logout")
