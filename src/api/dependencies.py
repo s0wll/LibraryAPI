@@ -44,7 +44,11 @@ async def get_current_user(db: DBDep, token: str = Depends(get_token)) -> User:
     user = await AuthService(db).get_one_or_none_user(user_id=user_id)
     return user
 
-async def get_current_active_admin(current_user: User = Depends(get_current_user)):
+
+UserDep = Annotated[User, Depends(get_current_user)]
+
+
+async def get_current_active_admin(current_user: User = Depends(get_current_user)) -> User:
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="У вас недостаточно прав")
     return current_user

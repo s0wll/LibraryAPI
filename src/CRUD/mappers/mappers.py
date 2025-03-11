@@ -1,3 +1,5 @@
+from src.schemas.borrows import Borrow
+from src.models.borrows import BorrowsOrm
 from src.CRUD.mappers.base import DataMapper
 from src.models.authors import AuthorsOrm
 from src.schemas.authors import Author
@@ -35,3 +37,9 @@ class UserDataMapper(DataMapper):
 class UserWithHashedPasswordDataMapper(DataMapper):
     db_model = UsersOrm
     schema = UserWithHashedPassword
+
+
+class BorrowDataMapper(DataMapper):
+    db_model = BorrowsOrm
+    schema = Borrow
+    

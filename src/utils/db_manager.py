@@ -1,3 +1,4 @@
+from src.CRUD.borrows import BorrowsCRUD
 from src.CRUD.authors import AuthorsCRUD
 from src.CRUD.books import BooksAuthorsCRUD, BooksCRUD
 from src.CRUD.users import UsersCRUD
@@ -14,6 +15,7 @@ class DBManager:
         self.books = BooksCRUD(self.session)
         self.books_authors = BooksAuthorsCRUD(self.session)
         self.users = UsersCRUD(self.session)
+        self.borrows = BorrowsCRUD(self.session)
 
         return self
     
