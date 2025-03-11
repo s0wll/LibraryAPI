@@ -28,11 +28,11 @@ class AuthorsService(BaseService):
         await self.db.commit()
         return author
     
-    async def edit_author(self, author_id: int, author_data: AuthorAdd):
+    async def update_author(self, author_id: int, author_data: AuthorAdd):
         await self.db.authors.edit(id=author_id, data=author_data)
         await self.db.commit()
 
-    async def partially_edit_author(self, author_id: int, author_data: AuthorAdd):
+    async def partially_update_author(self, author_id: int, author_data: AuthorAdd):
         await self.db.authors.edit(id=author_id, data=author_data, exclude_unset=True)
         await self.db.commit()
 

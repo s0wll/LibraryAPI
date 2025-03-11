@@ -45,7 +45,7 @@ class BaseCRUD:
         model = result.scalars().one()
         return self.mapper.map_to_domain_entity(model)
     
-    async def edit(self, data: BaseModel, exclude_unset: bool = False, **filter_by) -> None:
+    async def update(self, data: BaseModel, exclude_unset: bool = False, **filter_by) -> None:
         update_stmt = (
             update(self.model)
             .filter_by(**filter_by)

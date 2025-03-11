@@ -37,14 +37,14 @@ async def add_author(admin_check: AdminDep, db: DBDep, author_data: AuthorAdd = 
 
 
 @router.put("/{author_id}")
-async def edit_author(admin_check: AdminDep, db: DBDep, author_id: int, author_data: AuthorAdd):
-    await AuthorsService(db).edit_author(author_id, author_data)
+async def update_author(admin_check: AdminDep, db: DBDep, author_id: int, author_data: AuthorAdd):
+    await AuthorsService(db).update_author(author_id, author_data)
     return {"status": "OK"}
 
 
 @router.patch("/{author_id}")
-async def partially_edit_author(admin_check: AdminDep, db: DBDep, author_id: int, author_data: AuthorPatch):
-    await AuthorsService(db).partially_edit_author(author_id, author_data)
+async def partially_update_author(admin_check: AdminDep, db: DBDep, author_id: int, author_data: AuthorPatch):
+    await AuthorsService(db).partially_update_author(author_id, author_data)
     return {"status": "OK"}
 
 
