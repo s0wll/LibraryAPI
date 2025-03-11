@@ -22,6 +22,7 @@ class User(BaseModel):
     id: int
     email: EmailStr
     username: str
+    borrowed_books_count: int
     is_admin: bool
 
 

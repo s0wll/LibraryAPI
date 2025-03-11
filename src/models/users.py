@@ -11,4 +11,5 @@ class UsersOrm(Base):
     username: Mapped[str] = mapped_column(String(50), unique=True)
     email: Mapped[str] = mapped_column(String(100), unique=True)
     hashed_password: Mapped[str] = mapped_column(String(200))
+    borrowed_books_count: Mapped[int] = mapped_column(default=0)
     is_admin: Mapped[bool] = mapped_column(default=False)

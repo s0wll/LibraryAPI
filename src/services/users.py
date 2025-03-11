@@ -19,9 +19,9 @@ class UsersService(BaseService):
             return "Вы являетесь администратором"
     
     async def assign_user_role(self, user_id: int, user_data: UserIsAdminRequest) -> None:
-        await self.db.users.edit(id=user_id, data=user_data)
+        await self.db.users.update(id=user_id, data=user_data)
         await self.db.commit()
 
     async def update_user(self, user_id: int, user_data: UserPatch) -> None:
-        await self.db.users.edit(id=user_id, data=user_data, exclude_unset=True)
+        await self.db.users.update(id=user_id, data=user_data, exclude_unset=True)
         await self.db.commit()
