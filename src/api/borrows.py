@@ -1,6 +1,7 @@
 from datetime import date
 
 from fastapi import APIRouter
+from fastapi_cache.decorator import cache
 
 from src.services.borrows import BorrowsService
 from src.api.dependencies import AdminDep, DBDep, UserDep
@@ -11,11 +12,13 @@ router = APIRouter(prefix="/borrows", tags=["Выдача книг"])
 
 
 @router.get("")
+@cache(expire=10)
 async def get_all_borrows(admin_check: AdminDep, db: DBDep):
     return await BorrowsService(db).get_all_borrows()
 
 
 @router.get("/me")
+@cache(expire=10)
 async def get_my_borrows(db: DBDep, user: UserDep):
     return await BorrowsService(db).get_my_borrows(user.id)
 

@@ -1,6 +1,7 @@
 from datetime import date
 
 from fastapi import APIRouter, Body, Query
+from fastapi_cache.decorator import cache
 
 from src.services.authors import AuthorsService
 from src.api.dependencies import AdminDep, PaginationDep, DBDep
@@ -11,6 +12,7 @@ router = APIRouter(prefix="/authors", tags=["Авторы"])
 
 
 @router.get("")
+@cache(expire=10)
 async def get_authors(
     admin_check: AdminDep,
     db: DBDep,
@@ -26,6 +28,7 @@ async def get_authors(
 
 
 @router.get("/{author_id}")
+@cache(expire=10)
 async def get_author(admin_check: AdminDep, db: DBDep, author_id: int):
     return await AuthorsService(db).get_author(author_id)
 

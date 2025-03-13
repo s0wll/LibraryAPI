@@ -1,17 +1,20 @@
 from datetime import date
 
 from fastapi import APIRouter, Query
+from fastapi_cache.decorator import cache
 
 from src.schemas.books import BookAddRequest, BookPatchRequest
 from src.services.books import BooksService
-from src.api.dependencies import AdminDep, PaginationDep, DBDep
+from src.api.dependencies import AdminDep, PaginationDep, DBDep, UserDep
 
 
 router = APIRouter(prefix="/books", tags=["Книги"])
 
 
 @router.get("")
+@cache(expire=10)
 async def get_filtered_books(
+    user: UserDep,
     db: DBDep,
     pagination: PaginationDep,
     title: str | None = Query(None),
@@ -28,7 +31,8 @@ async def get_filtered_books(
 
 
 @router.get("/{book_id}")
-async def get_book(db: DBDep, book_id: int):
+@cache(expire=10)
+async def get_book(user: UserDep, db: DBDep, book_id: int):
     return await BooksService(db).get_book(book_id)
 
 

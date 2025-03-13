@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi_cache.decorator import cache
 
 from src.api.dependencies import AdminDep, UserDep, DBDep
 from src.services.users import UsersService
@@ -9,11 +10,13 @@ router = APIRouter(prefix="/users", tags=["Пользователи"])
 
 
 @router.get("")
+@cache(expire=10)
 async def get_all_users(admin_check: AdminDep, db: DBDep):
     return await UsersService(db).get_all_users()
 
 
 @router.get("/{user_id}")
+@cache(expire=10)
 async def get_current_user_role(user: UserDep, db: DBDep):
     return await UsersService(db).get_current_user_role(user.id)
 
