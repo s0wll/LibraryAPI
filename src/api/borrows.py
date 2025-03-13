@@ -2,6 +2,7 @@ from datetime import date
 
 from fastapi import APIRouter
 from fastapi_cache.decorator import cache
+from fastapi import BackgroundTasks
 
 from src.services.borrows import BorrowsService
 from src.api.dependencies import AdminDep, DBDep, UserDep
@@ -24,8 +25,8 @@ async def get_my_borrows(db: DBDep, user: UserDep):
 
 
 @router.post("")
-async def add_borrow(db: DBDep, user: UserDep, borrow_data: BorrowAddRequest):
-    borrow = await BorrowsService(db).add_borrow(user, borrow_data)
+async def add_borrow(db: DBDep, user: UserDep, borrow_data: BorrowAddRequest, background_tasks: BackgroundTasks):
+    borrow = await BorrowsService(db).add_borrow(user, borrow_data, background_tasks)
     return {"status": "OK", "data": borrow}
 
 
