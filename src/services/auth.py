@@ -6,7 +6,8 @@ from passlib.context import CryptContext
 import jwt
 from pydantic import BaseModel
 
-from src.schemas.users import UserAdd, UserAddRequest
+from src.exceptions import IncorrectPasswordException, ObjectAlreadyExistsException, ObjectNotFoundException, UserAlreadyExistsException, UserNotFoundException
+from src.schemas.users import UserAdd, UserAddRequest, UserLoginRequest
 from src.config import settings
 from src.services.base import BaseService
 
@@ -37,11 +38,20 @@ class AuthService(BaseService):
     async def register_user(self, data: UserAddRequest) -> None:
         hashed_password = self.hash_password(data.password)
         new_user_data = UserAdd(email=data.email, username=data.username, hashed_password=hashed_password)
-        await self.db.users.add(new_user_data)
-        await self.db.commit()
+        try:
+            await self.db.users.add(new_user_data)
+            await self.db.commit()
+        except ObjectAlreadyExistsException as exc:
+            raise UserAlreadyExistsException from exc
 
-    async def login_user(self, data: UserAddRequest) -> str:
-        user = await self.db.users.get_user_with_hashed_password(email=data.email)
+    async def login_user(self, data: UserLoginRequest) -> str:
+        try:
+            user = await self.db.users.get_user_with_hashed_password(email=data.email)
+        except ObjectNotFoundException:
+            raise UserNotFoundException
+    
+        if not self.verify_password(data.password, user.hashed_password):
+            raise IncorrectPasswordException
         access_token = self.create_access_token({"user_id": user.id})
         return access_token
     

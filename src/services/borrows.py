@@ -8,6 +8,7 @@ from src.schemas.borrows import Borrow, BorrowAdd, BorrowAddRequest
 from src.api.dependencies import UserDep
 from src.services.base import BaseService
 from src.tasks.tasks import send_borrow_info_email_task
+from src.exceptions import BookNotFoundException, BorrowNotFoundException, ObjectNotFoundException, check_date_to_after_date_from
 
 
 class BorrowsService(BaseService):
@@ -15,11 +16,17 @@ class BorrowsService(BaseService):
         return await self.db.borrows.get_all()
 
     async def get_my_borrows(self, user_id: int):
-        return await self.db.borrows.get_filtered(user_id=user_id)
+        try:
+            return await self.db.borrows.get_filtered(user_id=user_id)
+        except ObjectNotFoundException:
+            raise BorrowNotFoundException
     
     async def add_borrow(self, user: UserDep, borrow_data: BorrowAddRequest, background_tasks: BackgroundTasks):
-        # Реализовать проверку даты
-        book_data: Book = await self.db.books.get_one(id=borrow_data.book_id)
+        check_date_to_after_date_from(borrow_data.date_from, borrow_data.date_to)
+        try:
+            book_data: Book = await self.db.books.get_one(id=borrow_data.book_id)
+        except ObjectNotFoundException:
+            raise BookNotFoundException
         _borrow_data = BorrowAdd(user_id=user.id, **borrow_data.model_dump(), is_returned=False)
 
         if book_data.quantity <= 0:

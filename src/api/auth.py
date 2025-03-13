@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Response
 
+from src.exceptions import IncorrectPasswordException, IncorrectPasswordHTTPException, UserAlreadyExistsException, UserEmailAlreadyExistsHTTPException, UserEmailNotFoundHTTPException, UserNotFoundException
 from src.api.dependencies import UserDep, DBDep
 from src.services.auth import AuthService
-from src.schemas.users import UserAddRequest
+from src.schemas.users import UserAddRequest, UserLoginRequest
 
 
 router = APIRouter(prefix="/auth", tags=["Аутентификация и авторизация"])
@@ -10,17 +11,25 @@ router = APIRouter(prefix="/auth", tags=["Аутентификация и авт
 
 @router.post("/register")
 async def register_user(data: UserAddRequest, db: DBDep):
-    await AuthService(db).register_user(data)
+    try:
+        await AuthService(db).register_user(data)
+    except UserAlreadyExistsException:
+        raise UserEmailAlreadyExistsHTTPException
     return {"status": "OK"}
 
 
 @router.post("/login")
 async def login_user(
-    data: UserAddRequest,
+    data: UserLoginRequest,
     response: Response,
     db: DBDep,
 ):
-    access_token = await AuthService(db).login_user(data)
+    try:
+        access_token = await AuthService(db).login_user(data)
+    except UserNotFoundException:
+        raise UserEmailNotFoundHTTPException
+    except IncorrectPasswordException:
+        raise IncorrectPasswordHTTPException
     response.set_cookie("access_token", access_token)
     return {"access_token": access_token}
 

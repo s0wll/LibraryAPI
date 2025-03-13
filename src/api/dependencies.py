@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
+from src.exceptions import NotAuthenticatedHTTPException
 from src.schemas.users import User
 from src.services.auth import AuthService
 from src.utils.db_manager import DBManager
@@ -21,14 +22,13 @@ PaginationDep = Annotated[PaginationParams, Depends()]
 
 def get_token(request: Request) -> str:
     token = request.cookies.get("access_token", None)
+    if not token:
+        raise NotAuthenticatedHTTPException
     return token
 
 def get_current_user_id(token: str = Depends(get_token)) -> int:
     data = AuthService().decode_token(token)
     return data["user_id"]
-
-
-# UserIdDep = Annotated[int, Depends(get_current_user_id)]  # Пока не нужно
 
 
 async def get_db():

@@ -1,3 +1,4 @@
+import logging
 import sys
 from pathlib import Path
 from contextlib import asynccontextmanager
@@ -8,6 +9,8 @@ from fastapi_cache.backends.redis import RedisBackend
 import uvicorn
 
 sys.path.append(str(Path(__file__).parent.parent))
+
+logging.basicConfig(level=logging.INFO)
 
 from src.init import redis_connector
 from src.api.auth import router as router_auth
@@ -22,6 +25,7 @@ async def lifespan(app: FastAPI):
     await redis_connector.connect()
 
     FastAPICache.init(RedisBackend(redis_connector.redis), prefix="fastapi-cache")
+    logging.info("FastAPI Cache инициализирован")
     yield
     await redis_connector.close()
 
@@ -36,4 +40,5 @@ app.include_router(router_books)
 app.include_router(router_borrows)
 
 if __name__ == "__main__":
+    logging.info("Запуск приложения через uvicorn")
     uvicorn.run("main:app", host="", reload=True)

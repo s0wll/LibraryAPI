@@ -1,3 +1,5 @@
+import logging
+
 import redis.asyncio as redis
 
 
@@ -8,7 +10,9 @@ class RedisConnector:
         self.redis = None
 
     async def connect(self):
+        logging.info(f"Начинаю поддключение к Redis, host={self.host}, port={self.port}")
         self.redis = await redis.Redis(host=self.host, port=self.port)
+        logging.info(f"Успешное поддключение к Redis, host={self.host}, port={self.port}")
 
     async def set(self, key: str, value: str, expire: int = None):
         if expire:
@@ -24,4 +28,6 @@ class RedisConnector:
         await self.redis.delete(key)
 
     async def close(self):
+        logging.info("Начинаю закрытие соединения с Redis")
         await self.redis.close()
+        logging.info("Успешное закрытие соединения с Redis")

@@ -3,6 +3,7 @@ from datetime import date
 from fastapi import APIRouter, Body, Query
 from fastapi_cache.decorator import cache
 
+from src.exceptions import AuthorAlreadyExistsException, AuthorAlreadyExistsHTTPException, AuthorKeyIsStillReferencedException, AuthorKeyIsStillReferencedHTTPException, AuthorNotFoundException, AuthorNotFoundHTTPException
 from src.services.authors import AuthorsService
 from src.api.dependencies import AdminDep, PaginationDep, DBDep
 from src.schemas.authors import AuthorAdd, AuthorPatch
@@ -20,22 +21,31 @@ async def get_authors(
     name: str | None = Query(None),
     birth_date: date | None = Query(None, example="2000-01-01"),
 ):
-    return await AuthorsService(db).get_filtered_authors(
-        pagination,
-        name,
-        birth_date,
-    )
+    try:
+        return await AuthorsService(db).get_filtered_authors(
+            pagination,
+            name,
+            birth_date,
+        )
+    except AuthorNotFoundException:
+        raise AuthorNotFoundHTTPException
 
 
 @router.get("/{author_id}")
 @cache(expire=10)
 async def get_author(admin_check: AdminDep, db: DBDep, author_id: int):
-    return await AuthorsService(db).get_author(author_id)
+    try:
+        return await AuthorsService(db).get_author(author_id)
+    except AuthorNotFoundException:
+        raise AuthorNotFoundHTTPException
 
 
 @router.post("")
 async def add_author(admin_check: AdminDep, db: DBDep, author_data: AuthorAdd = Body(embed=True)):
-    author = await AuthorsService(db).add_author(author_data)
+    try:
+        author = await AuthorsService(db).add_author(author_data)
+    except AuthorAlreadyExistsException:
+        raise AuthorAlreadyExistsHTTPException
     return {"status": "OK", "data": author}
 
 
@@ -53,5 +63,8 @@ async def partially_update_author(admin_check: AdminDep, db: DBDep, author_id: i
 
 @router.delete("/{author_id}")
 async def delete_author(admin_check: AdminDep, db: DBDep, author_id: int):
-    await AuthorsService(db).delete_author(author_id)
+    try:
+        await AuthorsService(db).delete_author(author_id)
+    except AuthorKeyIsStillReferencedException:
+            raise AuthorKeyIsStillReferencedHTTPException
     return {"status": "OK"}

@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from fastapi_cache.decorator import cache
 from fastapi import BackgroundTasks
 
+from src.exceptions import BookNotFoundException, BookNotFoundHTTPException, BorrowNotFoundException, BorrowNotFoundHTTPException
 from src.services.borrows import BorrowsService
 from src.api.dependencies import AdminDep, DBDep, UserDep
 from src.schemas.borrows import BorrowAddRequest
@@ -21,12 +22,18 @@ async def get_all_borrows(admin_check: AdminDep, db: DBDep):
 @router.get("/me")
 @cache(expire=10)
 async def get_my_borrows(db: DBDep, user: UserDep):
-    return await BorrowsService(db).get_my_borrows(user.id)
+    try:
+        return await BorrowsService(db).get_my_borrows(user.id)
+    except BorrowNotFoundException:
+        raise BorrowNotFoundHTTPException
 
 
 @router.post("")
 async def add_borrow(db: DBDep, user: UserDep, borrow_data: BorrowAddRequest, background_tasks: BackgroundTasks):
-    borrow = await BorrowsService(db).add_borrow(user, borrow_data, background_tasks)
+    try:
+        borrow = await BorrowsService(db).add_borrow(user, borrow_data, background_tasks)
+    except BookNotFoundException:
+        raise BookNotFoundHTTPException
     return {"status": "OK", "data": borrow}
 
 

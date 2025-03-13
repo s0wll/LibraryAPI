@@ -1,7 +1,9 @@
 from datetime import date
+import logging
 
 from sqlalchemy import select, func
 
+from src.exceptions import ObjectNotFoundException
 from src.schemas.authors import Author
 from src.CRUD.base import BaseCRUD
 from src.models.authors import AuthorsOrm
@@ -28,4 +30,8 @@ class AuthorsCRUD(BaseCRUD):
             query = query.filter(AuthorsOrm.birth_date == birth_date)
         query = query.limit(limit).offset(offset)
         result = await self.session.execute(query)
-        return [self.mapper.map_to_domain_entity(author) for author in result.scalars().all()]
+        models = [self.mapper.map_to_domain_entity(author) for author in result.scalars().all()]
+        if not models:
+            logging.error("Ошибка получения данных авторов из БД")
+            raise ObjectNotFoundException
+        return models

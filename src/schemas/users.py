@@ -13,6 +13,11 @@ class UserAdd(BaseModel):
     hashed_password: str
 
 
+class UserLoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
 class UserPatch(BaseModel):
     email: EmailStr | None
     username: str | None

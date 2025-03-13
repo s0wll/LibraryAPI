@@ -1,8 +1,12 @@
 from datetime import date
+import logging
 
+from asyncpg.exceptions import ForeignKeyViolationError
 from sqlalchemy import delete, func, insert, select
 from sqlalchemy.orm import selectinload
+from sqlalchemy.exc import NoResultFound, IntegrityError
 
+from src.exceptions import ObjectNotFoundException
 from src.schemas.books import Book
 from src.CRUD.base import BaseCRUD
 from src.models.books import BooksAuthorsOrm, BooksOrm
@@ -34,12 +38,20 @@ class BooksCRUD(BaseCRUD):
             )
         query = query.limit(limit).offset(offset)
         result = await self.session.execute(query)
-        return [BookDataWithRelsMapper.map_to_domain_entity(book) for book in result.scalars().all()]
+        models = [BookDataWithRelsMapper.map_to_domain_entity(book) for book in result.scalars().all()]
+        if not models:
+            logging.error("Ошибка получения данных книг из БД")
+            raise ObjectNotFoundException
+        return models
 
     async def get_book_with_rels(self, **filter_by) -> Book:
         query = select(self.model).options(selectinload(self.model.authors)).filter_by(**filter_by)
         result = await self.session.execute(query)
-        model = result.scalars().one()
+        try:
+            model = result.scalars().one()
+        except NoResultFound as exc:
+            logging.error("Ошибка получения данных книг и авторов из БД")
+            raise ObjectNotFoundException from exc
         return BookDataWithRelsMapper.map_to_domain_entity(model)
 
 
@@ -65,4 +77,14 @@ class BooksAuthorsCRUD(BaseCRUD):
             insert_m2m_authors_stmt = insert(self.model).values(
                 [{"book_id": book_id, "author_id": author_id} for author_id in ids_to_insert]
             )
-            await self.session.execute(insert_m2m_authors_stmt)
+            try:
+                await self.session.execute(insert_m2m_authors_stmt)
+            except IntegrityError as exc:
+                logging.error(f"Ошибка получения данных авторов из БД, тип ошибки: {type(exc.orig.__cause__)=}")
+                if isinstance(exc.orig.__cause__, ForeignKeyViolationError):
+                    raise ObjectNotFoundException from exc
+                else:
+                    logging.error(
+                        f"Незнакомая ошибка, тип ошибки: {type(exc.orig.__cause__)=}"
+                    )
+                    raise exc
