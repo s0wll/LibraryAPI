@@ -25,10 +25,4 @@ def send_borrow_info_email_task(recipient_email: str, date_from: date, date_to: 
     message["Subject"] = "Library service notification"
 
     EmailSender.send_email(recipient_email, message)
-
-    # server = smtplib.SMTP("smtp.gmail.com", 587)
-    # server.starttls()
-
-    # server.login(sender_email, sender_password)
-    # server.sendmail(sender_email, recipient_email, message.as_string())
     logging.info(f"Письмо успешко отправлено на почту: {recipient_email}")
