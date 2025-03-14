@@ -1,9 +1,9 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Query, Request
+from fastapi import Depends, Query, Request
 from pydantic import BaseModel
 
-from src.exceptions import NotAuthenticatedHTTPException
+from src.exceptions import NotAdminHTTPException, NotAuthenticatedHTTPException
 from src.schemas.users import User
 from src.services.auth import AuthService
 from src.utils.db_manager import DBManager
@@ -50,7 +50,7 @@ UserDep = Annotated[User, Depends(get_current_user)]
 
 async def get_current_active_admin(current_user: User = Depends(get_current_user)) -> User:
     if not current_user.is_admin:
-        raise HTTPException(status_code=403, detail="У вас недостаточно прав")
+        raise NotAdminHTTPException
     return current_user
 
 

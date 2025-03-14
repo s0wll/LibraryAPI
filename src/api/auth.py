@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Response
+from fastapi import BackgroundTasks
 
 from src.exceptions import IncorrectPasswordException, IncorrectPasswordHTTPException, UserAlreadyExistsException, UserEmailAlreadyExistsHTTPException, UserEmailNotFoundHTTPException, UserNotFoundException
 from src.api.dependencies import UserDep, DBDep
@@ -10,9 +11,9 @@ router = APIRouter(prefix="/auth", tags=["Аутентификация и авт
 
 
 @router.post("/register")
-async def register_user(data: UserAddRequest, db: DBDep):
+async def register_user(data: UserAddRequest, db: DBDep, background_tasks: BackgroundTasks):
     try:
-        await AuthService(db).register_user(data)
+        await AuthService(db).register_user(data, background_tasks)
     except UserAlreadyExistsException:
         raise UserEmailAlreadyExistsHTTPException
     return {"status": "OK"}

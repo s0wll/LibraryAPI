@@ -3,8 +3,19 @@ import logging
 import smtplib
 from email.mime.text import MIMEText
 
+from src.tasks.email_sender import EmailSender
 from src.tasks.celery_app import celery_instance
 from src.tasks.config import sender_email, sender_password
+
+
+@celery_instance.task
+def send_successful_registration_email_task(new_user_email: str):
+    logging.debug(f"Вызывается функция (celery task) send_successful_registration_email_task")
+    message = MIMEText(f"Здравствуйте!\nВы успешно зарегестрировались в нашем сервисе.")
+    message["Subject"] = "Library service notification"
+    
+    EmailSender.send_email(recipient_email=new_user_email, message=message)
+    logging.info(f"Письмо успешко отправлено на почту: {new_user_email}")
 
 
 @celery_instance.task
@@ -12,9 +23,12 @@ def send_borrow_info_email_task(recipient_email: str, date_from: date, date_to: 
     logging.debug(f"Вызывается функция (celery task) send_borrow_info_email_task")
     message = MIMEText(f"Здравствуйте!\nВы взяли книгу (id={book_id}) {date_from}. Просьба вернуть ее {date_to}.")
     message["Subject"] = "Library service notification"
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
 
-    server.login(sender_email, sender_password)
-    server.sendmail(sender_email, recipient_email, message.as_string())
+    EmailSender.send_email(recipient_email, message)
+
+    # server = smtplib.SMTP("smtp.gmail.com", 587)
+    # server.starttls()
+
+    # server.login(sender_email, sender_password)
+    # server.sendmail(sender_email, recipient_email, message.as_string())
     logging.info(f"Письмо успешко отправлено на почту: {recipient_email}")

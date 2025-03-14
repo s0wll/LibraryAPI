@@ -131,11 +131,6 @@ class NotAuthenticatedHTTPException(LibraryServiceHTTPException):
 #     detail = "Некорректный ввод данных"
 
 
-class KeyIsStillReferencedHTTPException(LibraryServiceHTTPException):
-    status_code = 409
-    detail = "Ключ все еще используется в другой таблице"
-
-
 class AuthorKeyIsStillReferencedHTTPException(LibraryServiceHTTPException):
     status_code = 409
     detail = "Ключ таблицы авторов все еще используется в другой таблице"
@@ -144,3 +139,8 @@ class AuthorKeyIsStillReferencedHTTPException(LibraryServiceHTTPException):
 class BookKeyIsStillReferencedHTTPException(LibraryServiceHTTPException):
     status_code = 409
     detail = "Ключ таблицы книг все еще используется в другой таблице"
+
+
+class NotAdminHTTPException(LibraryServiceHTTPException):
+    status_code = 403
+    detail = "У вас недостаточно прав"
