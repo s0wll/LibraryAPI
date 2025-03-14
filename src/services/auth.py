@@ -2,6 +2,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Any
 
 from fastapi import Response
+from fastapi import BackgroundTasks
 from passlib.context import CryptContext
 import jwt
 from pydantic import BaseModel
@@ -10,6 +11,7 @@ from src.exceptions import IncorrectPasswordException, ObjectAlreadyExistsExcept
 from src.schemas.users import UserAdd, UserAddRequest, UserLoginRequest
 from src.config import settings
 from src.services.base import BaseService
+from src.tasks.tasks import send_successful_registration_email_task
 
 
 class AuthService(BaseService):
@@ -35,7 +37,7 @@ class AuthService(BaseService):
     def decode_token(self, token: str) -> dict:
         return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
     
-    async def register_user(self, data: UserAddRequest) -> None:
+    async def register_user(self, data: UserAddRequest, background_tasks: BackgroundTasks) -> None:
         hashed_password = self.hash_password(data.password)
         new_user_data = UserAdd(email=data.email, username=data.username, hashed_password=hashed_password)
         try:
@@ -43,6 +45,11 @@ class AuthService(BaseService):
             await self.db.commit()
         except ObjectAlreadyExistsException as exc:
             raise UserAlreadyExistsException from exc
+        
+        background_tasks.add_task(
+            send_successful_registration_email_task,
+            new_user_email=data.email,
+        )
 
     async def login_user(self, data: UserLoginRequest) -> str:
         try:
