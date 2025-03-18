@@ -35,5 +35,13 @@ class UserWithHashedPassword(User):
     hashed_password: str
 
 
+class UserAddToDB(BaseModel):
+    email: EmailStr
+    username: str
+    borrowed_books_count: int
+    is_admin: bool
+    hashed_password: str
+
+
 class UserIsAdminRequest(BaseModel):
     is_admin: bool = False

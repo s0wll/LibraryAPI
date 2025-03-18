@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi_cache.decorator import cache
 from fastapi import BackgroundTasks
 
-from src.exceptions import BookNotFoundException, BookNotFoundHTTPException, BorrowNotFoundException, BorrowNotFoundHTTPException
+from src.exceptions import BookNotFoundException, BookNotFoundHTTPException, BorrowNotFoundException, BorrowNotFoundHTTPException, MaxBooksLimitExceededException, MaxBooksLimitExceededHTTPException, NoBooksAvailableException, NoBooksAvailableHTTPException
 from src.services.borrows import BorrowsService
 from src.api.dependencies import AdminDep, DBDep, UserDep
 from src.schemas.borrows import BorrowAddRequest
@@ -34,6 +34,10 @@ async def add_borrow(db: DBDep, user: UserDep, borrow_data: BorrowAddRequest, ba
         borrow = await BorrowsService(db).add_borrow(user, borrow_data, background_tasks)
     except BookNotFoundException:
         raise BookNotFoundHTTPException
+    except NoBooksAvailableException:
+        raise NoBooksAvailableHTTPException
+    except MaxBooksLimitExceededException:
+        raise MaxBooksLimitExceededHTTPException
     return {"status": "OK", "data": borrow}
 
 

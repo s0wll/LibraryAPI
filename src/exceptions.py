@@ -72,6 +72,14 @@ class BookKeyIsStillReferencedException(LibraryServiceException):
     detail = "Ключ книги все еще используется"
 
 
+class NoBooksAvailableException(LibraryServiceException):
+    detail = "Нет доступных книг"
+
+
+class MaxBooksLimitExceededException(LibraryServiceException):
+    detail = "Пользователь не может взять книгу, т.к. у него уже есть максимальное количество книг"
+
+
 # HTTPExceptions
 class LibraryServiceHTTPException(HTTPException):
     status_code = 500
@@ -144,3 +152,13 @@ class BookKeyIsStillReferencedHTTPException(LibraryServiceHTTPException):
 class NotAdminHTTPException(LibraryServiceHTTPException):
     status_code = 403
     detail = "У вас недостаточно прав"
+
+
+class NoBooksAvailableHTTPException(LibraryServiceHTTPException):
+    status_code = 404
+    detail = "Нет доступных книг"
+
+
+class MaxBooksLimitExceededHTTPException(LibraryServiceHTTPException):
+    status_code = 403
+    detail = "Пользователь не может взять книгу, т.к. у него уже есть максимальное количество книг"

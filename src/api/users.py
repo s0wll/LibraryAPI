@@ -21,9 +21,9 @@ async def get_current_user_role(user: UserDep, db: DBDep):
     return await UsersService(db).get_current_user_role(user.id)
 
 
-@router.post("/{user_id}")
-async def assign_current_user_role(admin_check: AdminDep, user: UserDep, db: DBDep, user_data: UserIsAdminRequest):
-    await UsersService(db).assign_user_role(user.id, user_data)
+@router.put("/{user_id}/role")
+async def assign_user_role(admin_check: AdminDep, user_id: int, db: DBDep, user_data: UserIsAdminRequest):
+    await UsersService(db).assign_user_role(user_id, user_data)
     return {"status": "OK"}
 
 

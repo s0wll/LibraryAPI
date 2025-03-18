@@ -8,7 +8,7 @@ from src.schemas.borrows import Borrow, BorrowAdd, BorrowAddRequest
 from src.api.dependencies import UserDep
 from src.services.base import BaseService
 from src.tasks.tasks import send_borrow_info_email_task
-from src.exceptions import BookNotFoundException, BorrowNotFoundException, ObjectNotFoundException, check_date_to_after_date_from
+from src.exceptions import BookNotFoundException, BorrowNotFoundException, MaxBooksLimitExceededException, NoBooksAvailableException, ObjectNotFoundException, check_date_to_after_date_from
 
 
 class BorrowsService(BaseService):
@@ -30,11 +30,11 @@ class BorrowsService(BaseService):
         _borrow_data = BorrowAdd(user_id=user.id, **borrow_data.model_dump(), is_returned=False)
 
         if book_data.quantity <= 0:
-            raise Exception("Таких книг не осталось")
+            raise NoBooksAvailableException
         book_data.quantity -= 1
 
         if user.borrowed_books_count >= 5:
-            raise Exception("Вы уже взяли 5 книг")
+            raise MaxBooksLimitExceededException
         user.borrowed_books_count += 1
 
         borrow = await self.db.borrows.add(data=_borrow_data)

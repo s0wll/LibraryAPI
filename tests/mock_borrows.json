@@ -1,0 +1,30 @@
+[
+    {
+        "user_id": 1,
+        "book_id": 1,
+        "date_from": "2025-01-01",
+        "date_to": "2025-05-05",
+        "is_returned": false
+    },
+    {
+        "user_id": 1,
+        "book_id": 2,
+        "date_from": "2025-01-01",
+        "date_to": "2025-05-05",
+        "is_returned": false
+    },
+    {
+        "user_id": 1,
+        "book_id": 3,
+        "date_from": "2025-01-01",
+        "date_to": "2025-05-05",
+        "is_returned": false
+    },
+    {
+        "user_id": 1,
+        "book_id": 4,
+        "date_from": "2025-01-01",
+        "date_to": "2025-05-05",
+        "is_returned": "false"
+    }
+]
