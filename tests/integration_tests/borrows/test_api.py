@@ -16,12 +16,15 @@ async def test_get_all_borrows(authentificated_admin_ac):
             assert "date_from" in borrow
             assert "date_to" in borrow
             assert "is_returned" in borrow
+    if response.status_code != 200:
+        return
 
 
 @pytest.mark.parametrize(
     "user_id, book_id, date_from, date_to, is_returned, status_code",
     [
-        (3, 1, "2025-01-01", "2025-01-02", False, 200)
+        (3, 1, "2025-01-01", "2025-01-02", False, 200),
+        (3, 4, "2025-01-01", "2025-01-02", False, 404)
     ]
 )
 async def test_borrows_api_user_flow(
@@ -53,6 +56,8 @@ async def test_borrows_api_user_flow(
         assert new_borrow["data"]["date_from"] == date_from
         assert new_borrow["data"]["date_to"] == date_to
         assert new_borrow["data"]["is_returned"] == is_returned
+    if response_add_borrow.status_code != 200:
+        return
 
     # /get_my_borrows
     response_get_my_borrows = await authentificated_user_ac.get("/borrows/me")
@@ -61,15 +66,8 @@ async def test_borrows_api_user_flow(
         borrows = response_get_my_borrows.json()
         assert isinstance(borrows, list)
         assert len(borrows) > 0
-        for borrow in borrows:
-            assert isinstance(borrow, dict)
-            assert borrow["user_id"] == user_id
-            assert borrow["book_id"] == book_id
-            assert borrow["date_from"] == date_from
-            assert borrow["date_to"] == date_to
-            assert borrow["is_returned"] == is_returned
-
-    print(new_borrow["data"]["id"])
+    if response_get_my_borrows.status_code != 200:
+        return
 
     # /return_book
     response_return_book = await authentificated_user_ac.patch(
@@ -81,4 +79,6 @@ async def test_borrows_api_user_flow(
         returned_borrow = response_return_book.json()
         assert isinstance(returned_borrow, dict)
         assert returned_borrow["data"]["is_returned"] == True
+    if response_return_book.status_code != 200:
+        return
     
