@@ -32,6 +32,6 @@ class AuthorsCRUD(BaseCRUD):
         result = await self.session.execute(query)
         models = [self.mapper.map_to_domain_entity(author) for author in result.scalars().all()]
         if not models:
-            logging.error("Ошибка получения данных авторов из БД")
+            logging.error("Ошибка получения данных авторов из БД, данные не найдены")
             raise ObjectNotFoundException
         return models

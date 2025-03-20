@@ -1,3 +1,5 @@
+import logging
+
 from typing import Annotated
 
 from fastapi import Depends, Query, Request
@@ -23,6 +25,7 @@ PaginationDep = Annotated[PaginationParams, Depends()]
 def get_token(request: Request) -> str:
     token = request.cookies.get("access_token", None)
     if not token:
+        logging.error("Ошибка получения токена: пользователь не аутентифицирован")
         raise NotAuthenticatedHTTPException
     return token
 
@@ -50,6 +53,7 @@ UserDep = Annotated[User, Depends(get_current_user)]
 
 async def get_current_active_admin(current_user: User = Depends(get_current_user)) -> User:
     if not current_user.is_admin:
+        logging.error("Ошибка доступа: пользователь не администратор")
         raise NotAdminHTTPException
     return current_user
 

@@ -56,7 +56,7 @@ class BaseCRUD:
         result = await self.session.execute(query)
         models = [self.mapper.map_to_domain_entity(model) for model in result.scalars().all()]
         if not models:
-            logging.info(f"Ошибка получения данных из БД")
+            logging.error(f"Ошибка получения данных из БД, данные не найдены")
             raise ObjectNotFoundException
         return models
 
@@ -77,8 +77,8 @@ class BaseCRUD:
         result = await self.session.execute(query)
         try:
             model = result.scalars().one()
-        except NoResultFound:
-            logging.info(f"Ошибка получения данных из БД")
+        except NoResultFound as exc:
+            logging.error(f"Ошибка получения данных из БД, тип ошибки: {type(exc)=}")
             raise ObjectNotFoundException
         return self.mapper.map_to_domain_entity(model)
     
@@ -90,16 +90,26 @@ class BaseCRUD:
                 **data.model_dump(exclude_unset=exclude_unset),
             )
         )
-        await self.session.execute(update_stmt)
+        try:
+            await self.session.execute(update_stmt)
+        except IntegrityError as exc:
+            logging.error(f"Ошибка изменения данных в БД, тип ошибки: {type(exc.orig.__cause__)=}")
+            if isinstance(exc.orig.__cause__, UniqueViolationError):
+                raise ObjectAlreadyExistsException from exc
+            else:
+                logging.error(
+                    f"Незнакомая ошибка, не удалось удалить данные из БД, тип ошибки: {type(exc.orig.__cause__)=}"
+                )
+                raise exc
 
     async def delete(self, **filter_by) -> None:
         delete_stmt = delete(self.model).filter_by(**filter_by)
         try:
             await self.session.execute(delete_stmt)
         except IntegrityError as exc:
-            logging.info(f"Ошибка удаления данных из БД, тип ошибки: {type(exc.orig.__cause__)=}")
+            logging.error(f"Ошибка удаления данных из БД, тип ошибки: {type(exc.orig.__cause__)=}")
             if isinstance(exc.orig.__cause__, ForeignKeyViolationError):
-                raise KeyIsStillReferencedException
+                raise KeyIsStillReferencedException from exc
             else:
                 logging.error(
                     f"Незнакомая ошибка, не удалось удалить данные из БД, тип ошибки: {type(exc.orig.__cause__)=}"

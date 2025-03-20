@@ -40,10 +40,6 @@ class ObjectAlreadyExistsException(LibraryServiceException):
     detail = "Такой объект уже существует"
 
 
-class AuthorAlreadyExistsException(LibraryServiceException):
-    detail = "Автор уже существует"
-
-
 class UserAlreadyExistsException(ObjectAlreadyExistsException):
     detail = "Пользователь уже существует"
 
@@ -54,10 +50,6 @@ class IncorrectPasswordException(LibraryServiceException):
 
 class IncorrectTokenException(LibraryServiceException):
     detail = "Некорректный токен"
-
-
-# class InvalidInputException(LibraryServiceException):
-#     detail = "Некорректный ввод данных"
 
 
 class KeyIsStillReferencedException(LibraryServiceException):
@@ -109,14 +101,9 @@ class UserEmailNotFoundHTTPException(LibraryServiceHTTPException):
     detail = "Пользователь с таким email не найден"
 
 
-class UserEmailAlreadyExistsHTTPException(LibraryServiceHTTPException):
+class UserAlreadyExistsHTTPException(LibraryServiceHTTPException):
     status_code = 409
-    detail = "Пользователь с таким email уже существует"
-
-
-class AuthorAlreadyExistsHTTPException(LibraryServiceHTTPException):
-    status_code = 409
-    detail = "Автор уже существует"
+    detail = "Пользователь с таким email/username уже существует"
 
 
 class IncorrectPasswordHTTPException(LibraryServiceHTTPException):
@@ -132,11 +119,6 @@ class IncorrectTokenHTTPException(LibraryServiceHTTPException):
 class NotAuthenticatedHTTPException(LibraryServiceHTTPException):
     status_code = 401
     detail = "Вы не аутентифицированны/Вы не предоставили токен доступа"
-
-
-# class InvalidInputHTTPException(LibraryServiceHTTPException):
-#     status_code = 422
-#     detail = "Некорректный ввод данных"
 
 
 class AuthorKeyIsStillReferencedHTTPException(LibraryServiceHTTPException):

@@ -65,9 +65,12 @@ class BooksService(BaseService):
         _book_data = BookPatch(**_book_data_dict)
         await self.db.books.update(id=book_id, data=_book_data, exclude_unset=True)
         if "authors_ids" in _book_data_dict:
-            await self.db.books_authors.set_book_authors(
-                book_id, authors_ids=_book_data_dict["authors_ids"]
-            )
+            try:
+                await self.db.books_authors.set_book_authors(
+                    book_id, authors_ids=_book_data_dict["authors_ids"]
+                )
+            except ObjectNotFoundException:
+                raise AuthorNotFoundException
         await self.db.commit()
 
     async def delete_book(self, book_id: int):

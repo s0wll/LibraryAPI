@@ -13,7 +13,10 @@ from src.exceptions import BookNotFoundException, BorrowNotFoundException, MaxBo
 
 class BorrowsService(BaseService):
     async def get_all_borrows(self):
-        return await self.db.borrows.get_all()
+        try:
+            return await self.db.borrows.get_all()
+        except ObjectNotFoundException:
+            raise BorrowNotFoundException
 
     async def get_my_borrows(self, user_id: int):
         try:

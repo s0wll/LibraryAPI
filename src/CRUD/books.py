@@ -40,7 +40,7 @@ class BooksCRUD(BaseCRUD):
         result = await self.session.execute(query)
         models = [BookDataWithRelsMapper.map_to_domain_entity(book) for book in result.scalars().all()]
         if not models:
-            logging.error("Ошибка получения данных книг из БД")
+            logging.error("Ошибка получения данных книг из БД, книги не найдены")
             raise ObjectNotFoundException
         return models
 
@@ -50,7 +50,7 @@ class BooksCRUD(BaseCRUD):
         try:
             model = result.scalars().one()
         except NoResultFound as exc:
-            logging.error("Ошибка получения данных книг и авторов из БД")
+            logging.error(f"Ошибка получения данных книг и авторов из БД, тип ошибки: {type(exc)=}")
             raise ObjectNotFoundException from exc
         return BookDataWithRelsMapper.map_to_domain_entity(model)
 

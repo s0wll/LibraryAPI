@@ -2,6 +2,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from src.exceptions import ObjectAlreadyExistsException, UserAlreadyExistsException
 from src.schemas.users import UserIsAdminRequest, UserPatch
 from src.services.base import BaseService
 
@@ -22,5 +23,8 @@ class UsersService(BaseService):
         await self.db.commit()
 
     async def update_user(self, user_id: int, user_data: UserPatch) -> None:
-        await self.db.users.update(id=user_id, data=user_data, exclude_unset=True)
+        try:
+            await self.db.users.update(id=user_id, data=user_data, exclude_unset=True)
+        except ObjectAlreadyExistsException:
+            raise UserAlreadyExistsException
         await self.db.commit()

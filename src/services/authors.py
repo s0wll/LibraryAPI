@@ -1,6 +1,6 @@
 from datetime import date
 
-from src.exceptions import AuthorAlreadyExistsException, AuthorKeyIsStillReferencedException, AuthorNotFoundException, KeyIsStillReferencedException, ObjectAlreadyExistsException, ObjectNotFoundException
+from src.exceptions import AuthorKeyIsStillReferencedException, AuthorNotFoundException, KeyIsStillReferencedException, ObjectAlreadyExistsException, ObjectNotFoundException
 from src.schemas.authors import AuthorAdd
 from src.services.base import BaseService
 

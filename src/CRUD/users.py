@@ -20,8 +20,8 @@ class UsersCRUD(BaseCRUD):
         result = await self.session.execute(query)
         try:
             model = result.scalars().one()
-        except NoResultFound:
-            logging.error("Ошибка получения данных пользователя из БД")
+        except NoResultFound as exc:
+            logging.error(f"Ошибка получения данных пользователя из БД, тип ошибки: {type(exc)=}")
             raise ObjectNotFoundException
         return UserWithHashedPasswordDataMapper.map_to_domain_entity(model)
 
