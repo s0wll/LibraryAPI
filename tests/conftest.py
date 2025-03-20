@@ -70,7 +70,7 @@ async def ac() -> AsyncGenerator[AsyncClient]:
 @pytest.fixture(scope="session", autouse=True)
 async def add_admin_user(setup_database):
     admin_user = UserAddRequest(
-        email="admin@example.com", username="admin", password="admin_password", is_admin=True
+        email="admin@example.com", username="admin", password="admin_password"
     )
     hashed_password = AuthService().hash_password(admin_user.password)
     _admin_user = UserAddToDB(

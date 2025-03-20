@@ -4,7 +4,7 @@ from src.tasks.config import sender_email, sender_password
 
 
 class EmailSender:
-    def send_email(recipient_email: str, message: str) -> None:
+    def send_email(self, recipient_email: str, message: str) -> None:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
 

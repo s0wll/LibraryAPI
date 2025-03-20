@@ -1,12 +1,10 @@
-from pydantic import BaseModel
-
 from src.exceptions import ObjectAlreadyExistsException, UserAlreadyExistsException
-from src.schemas.users import UserIsAdminRequest, UserPatch
+from src.schemas.users import User, UserIsAdminRequest, UserPatch
 from src.services.base import BaseService
 
 
 class UsersService(BaseService):
-    async def get_all_users(self) -> list[BaseModel | None]:
+    async def get_all_users(self) -> list[User]:
         return await self.db.users.get_all()
 
     async def get_current_user_role(self, user_id: int) -> str:

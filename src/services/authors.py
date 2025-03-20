@@ -6,7 +6,7 @@ from src.exceptions import (
     KeyIsStillReferencedException,
     ObjectNotFoundException,
 )
-from src.schemas.authors import AuthorAdd
+from src.schemas.authors import Author, AuthorAdd
 from src.services.base import BaseService
 
 
@@ -17,7 +17,7 @@ class AuthorsService(BaseService):
         name: str | None,
         birth_date: date | None,
         # Добавить фильтрацию по книгам
-    ):
+    ) -> list[Author]:
         per_page = pagination.per_page or 5
         try:
             return await self.db.authors.get_filtered_authors(
@@ -29,26 +29,26 @@ class AuthorsService(BaseService):
         except ObjectNotFoundException:
             raise AuthorNotFoundException
 
-    async def get_author(self, author_id: int):
+    async def get_author(self, author_id: int) -> Author:
         try:
             return await self.db.authors.get_one(id=author_id)
         except ObjectNotFoundException:
             raise AuthorNotFoundException
 
-    async def add_author(self, author_data: AuthorAdd):
+    async def add_author(self, author_data: AuthorAdd) -> Author:
         author = await self.db.authors.add(author_data)
         await self.db.commit()
         return author
 
-    async def update_author(self, author_id: int, author_data: AuthorAdd):
+    async def update_author(self, author_id: int, author_data: AuthorAdd) -> None:
         await self.db.authors.update(id=author_id, data=author_data)
         await self.db.commit()
 
-    async def partially_update_author(self, author_id: int, author_data: AuthorAdd):
+    async def partially_update_author(self, author_id: int, author_data: AuthorAdd) -> None:
         await self.db.authors.update(id=author_id, data=author_data, exclude_unset=True)
         await self.db.commit()
 
-    async def delete_author(self, author_id: int):
+    async def delete_author(self, author_id: int) -> None:
         try:
             await self.db.authors.delete(id=author_id)
             await self.db.commit()

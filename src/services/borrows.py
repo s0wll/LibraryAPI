@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Any
 
 from fastapi import BackgroundTasks
 
@@ -19,13 +20,13 @@ from src.exceptions import (
 
 
 class BorrowsService(BaseService):
-    async def get_all_borrows(self):
+    async def get_all_borrows(self) -> list[Borrow]:
         try:
             return await self.db.borrows.get_all()
         except ObjectNotFoundException:
             raise BorrowNotFoundException
 
-    async def get_my_borrows(self, user_id: int):
+    async def get_my_borrows(self, user_id: int) -> list[Borrow]:
         try:
             return await self.db.borrows.get_filtered(user_id=user_id)
         except ObjectNotFoundException:
@@ -33,7 +34,7 @@ class BorrowsService(BaseService):
 
     async def add_borrow(
         self, user: UserDep, borrow_data: BorrowAddRequest, background_tasks: BackgroundTasks
-    ):
+    ) -> Borrow:
         check_date_to_after_date_from(borrow_data.date_from, borrow_data.date_to)
         try:
             book_data: Book = await self.db.books.get_one(id=borrow_data.book_id)
@@ -49,7 +50,7 @@ class BorrowsService(BaseService):
             raise MaxBooksLimitExceededException
         user.borrowed_books_count += 1
 
-        borrow = await self.db.borrows.add(data=_borrow_data)
+        borrow: Borrow = await self.db.borrows.add(data=_borrow_data)
         await self.db.books.update(id=book_data.id, data=book_data)
         await self.db.users.update(id=user.id, data=user)
         await self.db.commit()
@@ -65,8 +66,8 @@ class BorrowsService(BaseService):
         return borrow
 
     async def return_book(self, borrow_id: int, return_date: date, user: User) -> Borrow:
-        borrow_data = await self.db.borrows.get_one(id=borrow_id)
-        book_data = await self.db.books.get_one(id=borrow_data.book_id)
+        borrow_data: Borrow = await self.db.borrows.get_one(id=borrow_id)
+        book_data: Book = await self.db.books.get_one(id=borrow_data.book_id)
 
         book_data.quantity += 1
         borrow_data.date_to = return_date

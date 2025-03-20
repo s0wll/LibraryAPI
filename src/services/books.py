@@ -25,7 +25,7 @@ class BooksService(BaseService):
         title,
         publication_date: date | None,
         genre: str | None,
-    ):
+    ) -> list[Book]:
         per_page = pagination.per_page or 5
         try:
             return await self.db.books.get_filtered_books(
@@ -38,7 +38,7 @@ class BooksService(BaseService):
         except ObjectNotFoundException:
             raise BookNotFoundException
 
-    async def get_book(self, book_id: int):
+    async def get_book(self, book_id: int) -> Book:
         try:
             return await self.db.books.get_book_with_rels(id=book_id)
         except ObjectNotFoundException:
@@ -47,7 +47,7 @@ class BooksService(BaseService):
     async def create_book(
         self,
         book_data: BookAddRequest,
-    ):
+    ) -> Book:
         _book_data = BookAdd(**book_data.model_dump())
         book: Book = await self.db.books.add(_book_data)
 
@@ -63,7 +63,7 @@ class BooksService(BaseService):
         await self.db.commit()
         return book
 
-    async def update_book(self, book_id: int, book_data: BookAddRequest):
+    async def update_book(self, book_id: int, book_data: BookAddRequest) -> None:
         _book_data = BookAdd(**book_data.model_dump())
         await self.db.books.update(id=book_id, data=_book_data)
         try:
@@ -72,7 +72,7 @@ class BooksService(BaseService):
             raise AuthorNotFoundException
         await self.db.commit()
 
-    async def partially_update_book(self, book_id: int, book_data: BookPatchRequest):
+    async def partially_update_book(self, book_id: int, book_data: BookPatchRequest) -> None:
         _book_data_dict = book_data.model_dump(exclude_unset=True)
         _book_data = BookPatch(**_book_data_dict)
         await self.db.books.update(id=book_id, data=_book_data, exclude_unset=True)
@@ -85,7 +85,7 @@ class BooksService(BaseService):
                 raise AuthorNotFoundException
         await self.db.commit()
 
-    async def delete_book(self, book_id: int):
+    async def delete_book(self, book_id: int) -> None:
         try:
             await self.db.books.delete(id=book_id)
             await self.db.commit()

@@ -5,6 +5,7 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 
+from schemas.users import User
 from src.exceptions import ObjectNotFoundException
 from src.CRUD.base import BaseCRUD
 from src.models.users import UsersOrm
@@ -15,7 +16,7 @@ class UsersCRUD(BaseCRUD):
     model = UsersOrm
     mapper = UserDataMapper
 
-    async def get_user_with_hashed_password(self, email: EmailStr) -> BaseModel | Any:
+    async def get_user_with_hashed_password(self, email: EmailStr) -> User:
         query = select(self.model).filter_by(email=email)
         result = await self.session.execute(query)
         try:

@@ -1,6 +1,6 @@
 import logging
 
-from typing import Annotated
+from typing import Annotated, AsyncGenerator
 
 from fastapi import Depends, Query, Request
 from pydantic import BaseModel
@@ -35,7 +35,7 @@ def get_current_user_id(token: str = Depends(get_token)) -> int:
     return data["user_id"]
 
 
-async def get_db():
+async def get_db() -> AsyncGenerator[DBManager, None]:
     async with DBManager(session_factory=async_session_maker) as db:
         yield db
 
@@ -43,7 +43,7 @@ async def get_db():
 DBDep = Annotated[DBManager, Depends(get_db)]
 
 
-async def get_current_user(db: DBDep, token: str = Depends(get_token)) -> User:
+async def get_current_user(db: DBDep, token: str = Depends(get_token)) -> User | None:
     user_id = get_current_user_id(token)
     user = await AuthService(db).get_one_or_none_user(user_id=user_id)
     return user

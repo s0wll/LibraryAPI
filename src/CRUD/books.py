@@ -24,7 +24,7 @@ class BooksCRUD(BaseCRUD):
         genre: str,
         limit,
         offset,
-    ):
+    ) -> list[Book]:
         query = select(self.model).options(selectinload(self.model.authors))
         if title:
             query = query.filter(func.lower(self.model.title).contains(title.strip().lower()))

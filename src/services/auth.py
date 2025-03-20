@@ -5,7 +5,6 @@ from fastapi import Response
 from fastapi import BackgroundTasks
 from passlib.context import CryptContext
 import jwt
-from pydantic import BaseModel
 
 from src.exceptions import (
     IncorrectPasswordException,
@@ -14,7 +13,7 @@ from src.exceptions import (
     UserAlreadyExistsException,
     UserNotFoundException,
 )
-from src.schemas.users import UserAdd, UserAddRequest, UserLoginRequest
+from src.schemas.users import User, UserAdd, UserAddRequest, UserLoginRequest
 from src.config import settings
 from src.services.base import BaseService
 from src.tasks.tasks import send_successful_registration_email_task
@@ -37,7 +36,7 @@ class AuthService(BaseService):
     def hash_password(self, password: str) -> str:
         return self.pwd_context.hash(password)
 
-    def verify_password(self, plain_password, hashed_password) -> Any:
+    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         return self.pwd_context.verify(plain_password, hashed_password)
 
     def decode_token(self, token: str) -> dict:
@@ -70,7 +69,7 @@ class AuthService(BaseService):
         access_token = self.create_access_token({"user_id": user.id})
         return access_token
 
-    async def get_one_or_none_user(self, user_id: int) -> BaseModel | None | Any:
+    async def get_one_or_none_user(self, user_id: int) -> User | None:
         return await self.db.users.get_one_or_none(id=user_id)
 
     async def logout_user(self, response: Response) -> None:

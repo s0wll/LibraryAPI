@@ -12,7 +12,7 @@ def send_successful_registration_email_task(new_user_email: str):
     message = MIMEText("Здравствуйте!\nВы успешно зарегестрировались в нашем сервисе.")
     message["Subject"] = "Library service notification"
 
-    EmailSender.send_email(recipient_email=new_user_email, message=message)
+    EmailSender().send_email(recipient_email=new_user_email, message=message)
     logging.info(f"Письмо успешно отправлено на почту: {new_user_email}")
 
 
@@ -26,5 +26,5 @@ def send_borrow_info_email_task(
     )
     message["Subject"] = "Library service notification"
 
-    EmailSender.send_email(recipient_email, message)
+    EmailSender().send_email(recipient_email, message)
     logging.info(f"Письмо успешно отправлено на почту: {recipient_email}")
