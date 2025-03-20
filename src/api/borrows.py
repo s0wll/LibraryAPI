@@ -6,7 +6,16 @@ from fastapi import APIRouter
 from fastapi_cache.decorator import cache
 from fastapi import BackgroundTasks
 
-from src.exceptions import BookNotFoundException, BookNotFoundHTTPException, BorrowNotFoundException, BorrowNotFoundHTTPException, MaxBooksLimitExceededException, MaxBooksLimitExceededHTTPException, NoBooksAvailableException, NoBooksAvailableHTTPException
+from src.exceptions import (
+    BookNotFoundException,
+    BookNotFoundHTTPException,
+    BorrowNotFoundException,
+    BorrowNotFoundHTTPException,
+    MaxBooksLimitExceededException,
+    MaxBooksLimitExceededHTTPException,
+    NoBooksAvailableException,
+    NoBooksAvailableHTTPException,
+)
 from src.services.borrows import BorrowsService
 from src.api.dependencies import AdminDep, DBDep, UserDep
 from src.schemas.borrows import BorrowAddRequest
@@ -37,12 +46,16 @@ async def get_my_borrows(db: DBDep, user: UserDep):
         logging.info("Успешное получение списка выдачей книг текущего пользователя")
         return user_borrows
     except BorrowNotFoundException:
-        logging.error("Ошибка получения списка выдачей книг текущего пользователя: выдачи не найдены")
+        logging.error(
+            "Ошибка получения списка выдачей книг текущего пользователя: выдачи не найдены"
+        )
         raise BorrowNotFoundHTTPException
 
 
 @router.post("")
-async def add_borrow(db: DBDep, user: UserDep, borrow_data: BorrowAddRequest, background_tasks: BackgroundTasks):
+async def add_borrow(
+    db: DBDep, user: UserDep, borrow_data: BorrowAddRequest, background_tasks: BackgroundTasks
+):
     logging.info("Добавление новой выдачи книги /add_borrow")
     try:
         borrow = await BorrowsService(db).add_borrow(user, borrow_data, background_tasks)

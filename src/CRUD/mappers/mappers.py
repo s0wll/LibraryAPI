@@ -42,4 +42,3 @@ class UserWithHashedPasswordDataMapper(DataMapper):
 class BorrowDataMapper(DataMapper):
     db_model = BorrowsOrm
     schema = Borrow
-    

@@ -15,8 +15,9 @@ async def test_books_crud(db):
     new_book: Book = await db.books.add(_book_data)
 
     books_authors_data = [
-            BookAuthorAdd(book_id=new_book.id, author_id=author_id) for author_id in book_data.authors_ids
-        ]
+        BookAuthorAdd(book_id=new_book.id, author_id=author_id)
+        for author_id in book_data.authors_ids
+    ]
     await db.books_authors.add_bulk(books_authors_data)
     await db.commit()
 
@@ -55,9 +56,10 @@ async def test_books_crud(db):
     assert [updated_book.authors[0].id] == updated_book_data.authors_ids
 
     # Удаление книги
-    await db.books_authors.delete(book_id=book.id)  # Сначала идет удаление элемента с участием данной книги из таблицы m2m 
+    await db.books_authors.delete(
+        book_id=book.id
+    )  # Сначала идет удаление элемента с участием данной книги из таблицы m2m
     await db.books.delete(id=book.id)
     await db.commit()
     deleted_book = await db.books.get_one_or_none(id=book.id)
     assert not deleted_book
-

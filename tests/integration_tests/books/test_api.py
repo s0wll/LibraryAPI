@@ -5,7 +5,7 @@ import pytest
     "title, description, publication_date, genre, quantity, authors_ids, status_code",
     [
         (
-            "test_api_book1", 
+            "test_api_book1",
             "test_api_book1_description",
             "2025-01-01",
             "test_api_book1_genre",
@@ -14,15 +14,15 @@ import pytest
             200,
         ),
         (
-            "test_api_book2", 
+            "test_api_book2",
             "test_api_book2_description",
             "2025.10.10",
             "test_api_book2_genre",
             2,
             [2],
             422,
-        )
-    ]
+        ),
+    ],
 )
 async def test_books_api_flow(
     title: str,
@@ -52,7 +52,7 @@ async def test_books_api_flow(
             "genre": genre,
             "quantity": quantity,
             "authors_ids": authors_ids,
-        }
+        },
     )
     assert response_add_book.status_code == status_code
     if response_add_book.status_code == 200:
@@ -65,9 +65,9 @@ async def test_books_api_flow(
         assert new_book["quantity"] == quantity
     if status_code != 200:
         return
-    
+
     # /get_book
-    response_get_book = await authentificated_admin_ac.get(f"/books/{new_book["id"]}")
+    response_get_book = await authentificated_admin_ac.get(f"/books/{new_book['id']}")
     assert response_get_book.status_code == status_code
     if response_get_book.status_code == 200:
         res = response_get_book.json()
@@ -79,11 +79,11 @@ async def test_books_api_flow(
         assert res["quantity"] == quantity
     if status_code != 200:
         return
-    
+
     # /update_book
     updated_quantity = 3
     response_update_book = await authentificated_admin_ac.put(
-        f"/books/{new_book["id"]}",
+        f"/books/{new_book['id']}",
         json={
             "title": title,
             "description": description,
@@ -91,7 +91,7 @@ async def test_books_api_flow(
             "genre": genre,
             "quantity": updated_quantity,
             "authors_ids": authors_ids,
-        }
+        },
     )
     assert response_update_book.status_code == status_code
     if response_update_book.status_code == 200:
@@ -100,14 +100,14 @@ async def test_books_api_flow(
         assert res["status"] == "OK"
     if status_code != 200:
         return
-    
+
     # /partially_update_book
     new_genre = "updated_genre"
     response_partially_update_book = await authentificated_admin_ac.patch(
-        f"/books/{new_book["id"]}",
+        f"/books/{new_book['id']}",
         json={
             "genre": new_genre,
-        }
+        },
     )
     assert response_partially_update_book.status_code == status_code
     if response_partially_update_book.status_code == 200:
@@ -116,9 +116,9 @@ async def test_books_api_flow(
         assert res["status"] == "OK"
     if status_code != 200:
         return
-    
+
     # /delete_book
-    response_delete_book = await authentificated_admin_ac.delete(f"/books/{new_book["id"]}")
+    response_delete_book = await authentificated_admin_ac.delete(f"/books/{new_book['id']}")
     assert response_delete_book.status_code == status_code
     if status_code == 200:
         res = response_delete_book.json()
@@ -126,4 +126,3 @@ async def test_books_api_flow(
         assert res["status"] == "OK"
     if status_code != 200:
         return
-    

@@ -21,7 +21,6 @@ async def get_all_users(admin_check: AdminDep, db: DBDep):
     return users
 
 
-
 @router.get("/{user_id}")
 @cache(expire=10)
 async def get_current_user_role(user: UserDep, db: DBDep):
@@ -32,7 +31,9 @@ async def get_current_user_role(user: UserDep, db: DBDep):
 
 
 @router.put("/{user_id}/role")
-async def assign_user_role(admin_check: AdminDep, user_id: int, db: DBDep, user_data: UserIsAdminRequest):
+async def assign_user_role(
+    admin_check: AdminDep, user_id: int, db: DBDep, user_data: UserIsAdminRequest
+):
     logging.info("Назначение роли пользователю /assign_user_role")
     await UsersService(db).assign_user_role(user_id, user_data)
     logging.info("Успешное назначение роли пользователю")

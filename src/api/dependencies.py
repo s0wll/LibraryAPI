@@ -29,6 +29,7 @@ def get_token(request: Request) -> str:
         raise NotAuthenticatedHTTPException
     return token
 
+
 def get_current_user_id(token: str = Depends(get_token)) -> int:
     data = AuthService().decode_token(token)
     return data["user_id"]

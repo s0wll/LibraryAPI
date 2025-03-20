@@ -24,8 +24,8 @@ async def test_get_all_borrows(authentificated_admin_ac):
     "user_id, book_id, date_from, date_to, is_returned, status_code",
     [
         (3, 1, "2025-01-01", "2025-01-02", False, 200),
-        (3, 4, "2025-01-01", "2025-01-02", False, 404)
-    ]
+        (3, 4, "2025-01-01", "2025-01-02", False, 404),
+    ],
 )
 async def test_borrows_api_user_flow(
     user_id: int,
@@ -45,7 +45,7 @@ async def test_borrows_api_user_flow(
             "date_from": date_from,
             "date_to": date_to,
             "is_returned": is_returned,
-        }
+        },
     )
     assert response_add_borrow.status_code == status_code
     if response_add_borrow.status_code == 200:
@@ -71,14 +71,12 @@ async def test_borrows_api_user_flow(
 
     # /return_book
     response_return_book = await authentificated_user_ac.patch(
-        f"/borrows/return/{new_borrow["data"]["id"]}",
-        params={"return_date": "2025-01-02"}
+        f"/borrows/return/{new_borrow['data']['id']}", params={"return_date": "2025-01-02"}
     )
     assert response_return_book.status_code == 200
     if response_return_book.status_code == 200:
         returned_borrow = response_return_book.json()
         assert isinstance(returned_borrow, dict)
-        assert returned_borrow["data"]["is_returned"] == True
+        assert returned_borrow["data"]["is_returned"]
     if response_return_book.status_code != 200:
         return
-    

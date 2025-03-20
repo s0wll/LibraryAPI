@@ -1,7 +1,20 @@
 from datetime import date
 
-from src.exceptions import AuthorNotFoundException, BookKeyIsStillReferencedException, BookNotFoundException, KeyIsStillReferencedException, ObjectNotFoundException
-from src.schemas.books import Book, BookAdd, BookAddRequest, BookAuthorAdd, BookPatch, BookPatchRequest
+from src.exceptions import (
+    AuthorNotFoundException,
+    BookKeyIsStillReferencedException,
+    BookNotFoundException,
+    KeyIsStillReferencedException,
+    ObjectNotFoundException,
+)
+from src.schemas.books import (
+    Book,
+    BookAdd,
+    BookAddRequest,
+    BookAuthorAdd,
+    BookPatch,
+    BookPatchRequest,
+)
 from src.services.base import BaseService
 
 
@@ -39,25 +52,24 @@ class BooksService(BaseService):
         book: Book = await self.db.books.add(_book_data)
 
         books_authors_data = [
-            BookAuthorAdd(book_id=book.id, author_id=author_id) for author_id in book_data.authors_ids
+            BookAuthorAdd(book_id=book.id, author_id=author_id)
+            for author_id in book_data.authors_ids
         ]
         if books_authors_data:
             try:
                 await self.db.books_authors.add_bulk(books_authors_data)
             except ObjectNotFoundException:
-                raise AuthorNotFoundException                
+                raise AuthorNotFoundException
         await self.db.commit()
         return book
-    
+
     async def update_book(self, book_id: int, book_data: BookAddRequest):
         _book_data = BookAdd(**book_data.model_dump())
         await self.db.books.update(id=book_id, data=_book_data)
         try:
-            await self.db.books_authors.set_book_authors(
-                book_id, authors_ids=book_data.authors_ids
-            )
+            await self.db.books_authors.set_book_authors(book_id, authors_ids=book_data.authors_ids)
         except ObjectNotFoundException:
-                raise AuthorNotFoundException      
+            raise AuthorNotFoundException
         await self.db.commit()
 
     async def partially_update_book(self, book_id: int, book_data: BookPatchRequest):
@@ -79,4 +91,3 @@ class BooksService(BaseService):
             await self.db.commit()
         except KeyIsStillReferencedException:
             raise BookKeyIsStillReferencedException
-

@@ -23,7 +23,7 @@ class RedisConnector:
     async def get(self, key: str):
         value = await self.redis.get(key)
         return value
-    
+
     async def delete(self, key: str):
         await self.redis.delete(key)
 

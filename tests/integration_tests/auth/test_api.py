@@ -9,7 +9,7 @@ import pytest
         ("api_test_user2@gmail.com", "api_test_user2", "12345", 200),
         ("api_test_user3", "api_test_user3", "12345", 422),
         ("api_test_user3@gmail", "api_test_user3", "12345", 422),
-    ]
+    ],
 )
 async def test_auth_api_flow(email: str, username: str, password: str, status_code: int, ac):
     # /register
@@ -19,19 +19,19 @@ async def test_auth_api_flow(email: str, username: str, password: str, status_co
             "email": email,
             "username": username,
             "password": password,
-        }
+        },
     )
     assert response_register.status_code == status_code
     if status_code != 200:
         return
-    
+
     # /login
     response_login = await ac.post(
         "/auth/login",
         json={
             "email": email,
             "password": password,
-        }
+        },
     )
     assert response_login.status_code == 200
     assert ac.cookies["access_token"]

@@ -8,7 +8,14 @@ from src.schemas.borrows import Borrow, BorrowAdd, BorrowAddRequest
 from src.api.dependencies import UserDep
 from src.services.base import BaseService
 from src.tasks.tasks import send_borrow_info_email_task
-from src.exceptions import BookNotFoundException, BorrowNotFoundException, MaxBooksLimitExceededException, NoBooksAvailableException, ObjectNotFoundException, check_date_to_after_date_from
+from src.exceptions import (
+    BookNotFoundException,
+    BorrowNotFoundException,
+    MaxBooksLimitExceededException,
+    NoBooksAvailableException,
+    ObjectNotFoundException,
+    check_date_to_after_date_from,
+)
 
 
 class BorrowsService(BaseService):
@@ -23,8 +30,10 @@ class BorrowsService(BaseService):
             return await self.db.borrows.get_filtered(user_id=user_id)
         except ObjectNotFoundException:
             raise BorrowNotFoundException
-    
-    async def add_borrow(self, user: UserDep, borrow_data: BorrowAddRequest, background_tasks: BackgroundTasks):
+
+    async def add_borrow(
+        self, user: UserDep, borrow_data: BorrowAddRequest, background_tasks: BackgroundTasks
+    ):
         check_date_to_after_date_from(borrow_data.date_from, borrow_data.date_to)
         try:
             book_data: Book = await self.db.books.get_one(id=borrow_data.book_id)
@@ -54,7 +63,7 @@ class BorrowsService(BaseService):
         )
 
         return borrow
-    
+
     async def return_book(self, borrow_id: int, return_date: date, user: User) -> Borrow:
         borrow_data = await self.db.borrows.get_one(id=borrow_id)
         book_data = await self.db.books.get_one(id=borrow_data.book_id)
@@ -70,4 +79,3 @@ class BorrowsService(BaseService):
 
         await self.db.commit()
         return borrow_data
-

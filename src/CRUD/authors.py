@@ -23,9 +23,7 @@ class AuthorsCRUD(BaseCRUD):
     ) -> list[Author]:
         query = select(AuthorsOrm)
         if name:
-            query = query.filter(
-                func.lower(AuthorsOrm.name).contains(name.strip().lower())
-            )
+            query = query.filter(func.lower(AuthorsOrm.name).contains(name.strip().lower()))
         if birth_date:
             query = query.filter(AuthorsOrm.birth_date == birth_date)
         query = query.limit(limit).offset(offset)

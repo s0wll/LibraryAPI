@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 import logging
 import sys
 from pathlib import Path
@@ -28,7 +29,6 @@ async def lifespan(app: FastAPI):
     logging.info("FastAPI Cache инициализирован")
     yield
     await redis_connector.close()
-
 
 
 app = FastAPI(lifespan=lifespan)

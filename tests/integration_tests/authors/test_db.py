@@ -39,5 +39,3 @@ async def test_author_crud(db):
     await db.commit()
     deleted_author = await db.authors.get_one_or_none(id=new_author.id)
     assert not deleted_author
-
-

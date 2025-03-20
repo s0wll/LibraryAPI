@@ -27,18 +27,16 @@ class BooksCRUD(BaseCRUD):
     ):
         query = select(self.model).options(selectinload(self.model.authors))
         if title:
-            query = query.filter(
-                func.lower(self.model.title).contains(title.strip().lower())
-            )
+            query = query.filter(func.lower(self.model.title).contains(title.strip().lower()))
         if publication_date:
             query = query.filter(self.model.publication_date == publication_date)
         if genre:
-            query = query.filter(
-                func.lower(self.model.genre).contains(genre.strip().lower())
-            )
+            query = query.filter(func.lower(self.model.genre).contains(genre.strip().lower()))
         query = query.limit(limit).offset(offset)
         result = await self.session.execute(query)
-        models = [BookDataWithRelsMapper.map_to_domain_entity(book) for book in result.scalars().all()]
+        models = [
+            BookDataWithRelsMapper.map_to_domain_entity(book) for book in result.scalars().all()
+        ]
         if not models:
             logging.error("Ошибка получения данных книг из БД, книги не найдены")
             raise ObjectNotFoundException
@@ -80,11 +78,11 @@ class BooksAuthorsCRUD(BaseCRUD):
             try:
                 await self.session.execute(insert_m2m_authors_stmt)
             except IntegrityError as exc:
-                logging.error(f"Ошибка получения данных авторов из БД, тип ошибки: {type(exc.orig.__cause__)=}")
+                logging.error(
+                    f"Ошибка получения данных авторов из БД, тип ошибки: {type(exc.orig.__cause__)=}"
+                )
                 if isinstance(exc.orig.__cause__, ForeignKeyViolationError):
                     raise ObjectNotFoundException from exc
                 else:
-                    logging.error(
-                        f"Незнакомая ошибка, тип ошибки: {type(exc.orig.__cause__)=}"
-                    )
+                    logging.error(f"Незнакомая ошибка, тип ошибки: {type(exc.orig.__cause__)=}")
                     raise exc

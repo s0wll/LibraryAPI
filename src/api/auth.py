@@ -3,7 +3,14 @@ import logging
 from fastapi import APIRouter, Response
 from fastapi import BackgroundTasks
 
-from src.exceptions import IncorrectPasswordException, IncorrectPasswordHTTPException, UserAlreadyExistsException, UserAlreadyExistsHTTPException, UserEmailNotFoundHTTPException, UserNotFoundException
+from src.exceptions import (
+    IncorrectPasswordException,
+    IncorrectPasswordHTTPException,
+    UserAlreadyExistsException,
+    UserAlreadyExistsHTTPException,
+    UserEmailNotFoundHTTPException,
+    UserNotFoundException,
+)
 from src.api.dependencies import UserDep, DBDep
 from src.services.auth import AuthService
 from src.schemas.users import UserAddRequest, UserLoginRequest

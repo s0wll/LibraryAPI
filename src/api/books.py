@@ -5,7 +5,14 @@ from datetime import date
 from fastapi import APIRouter, Query
 from fastapi_cache.decorator import cache
 
-from src.exceptions import AuthorNotFoundException, AuthorNotFoundHTTPException, BookKeyIsStillReferencedException, BookKeyIsStillReferencedHTTPException, BookNotFoundException, BookNotFoundHTTPException
+from src.exceptions import (
+    AuthorNotFoundException,
+    AuthorNotFoundHTTPException,
+    BookKeyIsStillReferencedException,
+    BookKeyIsStillReferencedHTTPException,
+    BookNotFoundException,
+    BookNotFoundHTTPException,
+)
 from src.schemas.books import BookAddRequest, BookPatchRequest
 from src.services.books import BooksService
 from src.api.dependencies import AdminDep, PaginationDep, DBDep, UserDep
@@ -39,7 +46,6 @@ async def get_filtered_books(
         raise BookNotFoundHTTPException
 
 
-
 @router.get("/{book_id}")
 @cache(expire=10)
 async def get_book(user: UserDep, db: DBDep, book_id: int):
@@ -51,6 +57,7 @@ async def get_book(user: UserDep, db: DBDep, book_id: int):
     except BookNotFoundException:
         logging.error("Ошибка получения книги: книги не найдены")
         raise BookNotFoundHTTPException
+
 
 @router.post("")
 async def create_book(admin_check: AdminDep, db: DBDep, book_data: BookAddRequest):
@@ -77,7 +84,9 @@ async def update_book(admin_check: AdminDep, db: DBDep, book_data: BookAddReques
 
 
 @router.patch("/{book_id}")
-async def partially_update_book(admin_check: AdminDep, db: DBDep, book_data: BookPatchRequest, book_id: int):
+async def partially_update_book(
+    admin_check: AdminDep, db: DBDep, book_data: BookPatchRequest, book_id: int
+):
     logging.info("Частичное обновление книги по id /patch_book")
     try:
         await BooksService(db).partially_update_book(book_id, book_data)
@@ -97,4 +106,4 @@ async def delete_book(admin_check: AdminDep, db: DBDep, book_id: int):
     except BookKeyIsStillReferencedException:
         logging.error("Ошибка удаления книги: ключ книги все еще используется")
         raise BookKeyIsStillReferencedHTTPException
-    return {"status": "OK"} 
+    return {"status": "OK"}

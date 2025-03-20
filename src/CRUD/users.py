@@ -24,5 +24,3 @@ class UsersCRUD(BaseCRUD):
             logging.error(f"Ошибка получения данных пользователя из БД, тип ошибки: {type(exc)=}")
             raise ObjectNotFoundException
         return UserWithHashedPasswordDataMapper.map_to_domain_entity(model)
-
-    

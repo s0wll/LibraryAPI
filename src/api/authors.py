@@ -5,7 +5,12 @@ from datetime import date
 from fastapi import APIRouter, Body, Query
 from fastapi_cache.decorator import cache
 
-from src.exceptions import AuthorKeyIsStillReferencedException, AuthorKeyIsStillReferencedHTTPException, AuthorNotFoundException, AuthorNotFoundHTTPException
+from src.exceptions import (
+    AuthorKeyIsStillReferencedException,
+    AuthorKeyIsStillReferencedHTTPException,
+    AuthorNotFoundException,
+    AuthorNotFoundHTTPException,
+)
 from src.services.authors import AuthorsService
 from src.api.dependencies import AdminDep, PaginationDep, DBDep
 from src.schemas.authors import AuthorAdd, AuthorPatch
@@ -28,7 +33,8 @@ async def get_filtered_authors(
         authors = await AuthorsService(db).get_filtered_authors(
             pagination,
             name,
-            birth_date,)
+            birth_date,
+        )
         logging.info("Успешное получение списка авторов")
         return authors
     except AuthorNotFoundException:
@@ -66,7 +72,9 @@ async def update_author(admin_check: AdminDep, db: DBDep, author_id: int, author
 
 
 @router.patch("/{author_id}")
-async def partially_update_author(admin_check: AdminDep, db: DBDep, author_id: int, author_data: AuthorPatch):
+async def partially_update_author(
+    admin_check: AdminDep, db: DBDep, author_id: int, author_data: AuthorPatch
+):
     logging.info("Частичное обновление данных об авторе /partially_update_author")
     await AuthorsService(db).partially_update_author(author_id, author_data)
     logging.info("Успешное частичное обновление данных об авторе")

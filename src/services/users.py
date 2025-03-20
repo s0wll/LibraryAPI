@@ -1,5 +1,3 @@
-from typing import Any
-
 from pydantic import BaseModel
 
 from src.exceptions import ObjectAlreadyExistsException, UserAlreadyExistsException
@@ -17,7 +15,7 @@ class UsersService(BaseService):
             return "Вы не являетесь администратором"
         else:
             return "Вы являетесь администратором"
-    
+
     async def assign_user_role(self, user_id: int, user_data: UserIsAdminRequest) -> None:
         await self.db.users.update(id=user_id, data=user_data)
         await self.db.commit()
