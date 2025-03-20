@@ -15,3 +15,5 @@ dist/
 .DS_Store
 
 src/tasks/config.py
+
+docker_commands_README.md

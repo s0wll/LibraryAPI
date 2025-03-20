@@ -1,0 +1,64 @@
+services:
+  library_back_service:
+    container_name: 'library_back'
+    build:
+      context: .
+    networks:
+      - my_network
+    env_file:
+      - .env
+
+  library_db_service:
+    container_name: 'library_db'
+    image: postgres:16
+    environment:
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: library_password
+      POSTGRES_DB: LibraryAPI
+    ports:
+      - "6432:5432"
+    volumes:
+      - pg-library-data:/var/lib/postgresql/data
+    networks:
+      - my_network
+
+
+  library_redis_cache_service:
+    container_name: 'library_redis_cache'
+    image: redis:7
+    ports:
+      - "7379:6379"
+    networks:
+      - my_network
+
+
+  library_celery_worker_service:
+    container_name: 'library_celery_worker'
+    build:
+      context: .
+    networks:
+      - my_network
+    env_file:
+      - .env
+    command: "celery --app=src.tasks.celery_app:celery_instance worker -l INFO"
+
+
+  library_nginx_service:
+    container_name: library_nginx
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      [./nginx.conf:/etc/nginx/nginx.conf]
+    networks:
+      - my_network
+
+
+volumes:
+  pg-library-data:
+  nginx.conf:
+
+
+networks:
+  my_network:
+    external: true
