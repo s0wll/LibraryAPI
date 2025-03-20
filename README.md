@@ -64,8 +64,8 @@ MODE=TEST
 
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=postgres
-DB_PASS=3112!
+DB_USER=(ваше имя пользователя postgres)
+DB_PASS=(ваш пароль postgres)
 DB_NAME=LibraryAPI-test
 
 REDIS_HOST=localhost
@@ -75,6 +75,8 @@ JWT_SECRET_KEY=89d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
 JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
+
+Далее создайте дополнительную базу данных в PostgreSQL и назовите ее "LibraryAPI-test":
 
 После этого, для запуска тестирования, выполните следующую команду:
 ```bash
