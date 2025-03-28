@@ -63,25 +63,46 @@ API документация доступна по адресу: http://localhos
 
 ## Тестирование
 
-Для проведения тестирования, в корне проекта необходимо создать дополнительный файл .env-test и установить в нем следующие значения:
-```bash
-MODE=TEST
+1. Для проведения тестирования, в корне проекта необходимо создать дополнительный файл .env-test и установить в нем следующие значения:
+   ```bash
+   MODE=TEST
 
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=(ваше имя пользователя postgres)
-DB_PASS=(ваш пароль postgres)
-DB_NAME=LibraryAPI-test
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_USER=(ваше имя пользователя postgres)
+   DB_PASS=(ваш пароль postgres)
+   DB_NAME=LibraryAPI-test
 
-REDIS_HOST=localhost
-REDIS_PORT=6379
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
 
-JWT_SECRET_KEY=89d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
-JWT_ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-```
+   JWT_SECRET_KEY=89d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+   JWT_ALGORITHM=HS256
+   ACCESS_TOKEN_EXPIRE_MINUTES=30
+   ```
 
-Далее создайте дополнительную базу данных в PostgreSQL и назовите ее "LibraryAPI-test":
+2. Далее создайте дополнительную базу данных в PostgreSQL (локальное соединение) и назовите ее "LibraryAPI-test".
+
+3. Далее создайте и запустите виртуальное окружение с помощью команд (Я использовал в разработке версию Python 3.13.1):
+   ```bash
+   python3 -m venv venv
+   ```
+
+   Для MacOS/Linux:
+   ```bash
+   source venv/bin/activate
+   ```
+   Для Windows:
+   ```bash
+   venv\Scripts\activate.bat
+   ```
+   
+   Не забудьте выбрать правильное venv в вашем редакторе кода (В случае с VSCode - это "Recommended").
+
+4. Далее скачайте зависимости, выполнив команду:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 После этого, для запуска тестирования, выполните следующую команду:
 ```bash
@@ -98,4 +119,3 @@ unset DB_PASS
 unset DB_NAME
 unset REDIS_HOST
 ```
-
