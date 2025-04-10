@@ -14,7 +14,7 @@ from src.CRUD.mappers.base import DataMapper
 
 
 class BaseCRUD:
-    model: None
+    model = None
     mapper: DataMapper = None
 
     def __init__(self, session) -> None:

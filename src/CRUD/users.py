@@ -1,7 +1,6 @@
 import logging
-from typing import Any
 
-from pydantic import BaseModel, EmailStr
+from pydantic import EmailStr
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 

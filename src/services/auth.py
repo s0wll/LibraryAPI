@@ -1,5 +1,4 @@
 from datetime import datetime, timezone, timedelta
-from typing import Any
 
 from fastapi import Response
 from fastapi import BackgroundTasks
