@@ -1,4 +1,4 @@
-FROM python:3.12.9
+FROM python:3.12.10-slim
 
 WORKDIR /app
 
@@ -8,4 +8,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD sleep 5; alembic upgrade head; python src/main.py
+CMD ["sh", "-c", "sleep 5 && alembic upgrade 3cad4b33cb0f && python src/main.py"]
